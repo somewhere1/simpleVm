@@ -1,0 +1,13 @@
+[package]
+name = "simpleVM"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+
+[[bin]]
+name = "vm"
+
+[[bin]]
+name = "asm"
