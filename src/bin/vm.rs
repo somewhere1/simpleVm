@@ -26,7 +26,7 @@ pub fn main() ->Result<(),String>{
     reader.read_to_end(&mut program).map_err(|e| format!("read {}",e))?;
     
     let mut vm = Machine::new();
-    vm.define_handler(0xF0,signal_halt);
+    vm.define_handler(0xf0,signal_halt);
     vm.memory.load_from_vec(&program,0);
     while !vm.halt{
         vm.step()?;
