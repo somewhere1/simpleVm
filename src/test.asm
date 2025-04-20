@@ -1,1 +1,6 @@
-01 0A 01 08 03 00 02 00 05 F0 
+; 
+Push 10
+Push 240
+AddStack
+PopRegister A
+Signal $f0
