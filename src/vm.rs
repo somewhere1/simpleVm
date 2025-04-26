@@ -3,51 +3,6 @@ use std::collections::HashMap;
 use crate::op::{OpCode,Instruction};
 use crate::register::Register;
 
-fn parse_instruction_arg(ins:u16) -> u8{
-    ((ins&0xff00) >> 8) as u8
-}
-
-
-fn parse_instruction(ins: u16) -> Result<Instruction,String>{
-
-    let op =(ins & 0xff) as u8;
-    match OpCode::from_u8(op).ok_or(format!("unknown op: {:X}",op))? {
-        OpCode::Nop => Ok(Instruction::Nop),
-        OpCode::Push =>{
-            //取出进栈的数据
-            let arg = (ins & 0xff00) >> 8;
-            Ok(Instruction::Push(arg as u8))
-
-        },
-        OpCode::PopRegister => {
-            let reg = (ins & 0xff00) >> 8;
-            Register::from_u8(reg as u8)
-                .ok_or(format!("unknown register 0x{:X}",reg))
-                .map(|r| Instruction::PopRegister(r))
-                    
-        },
-        OpCode::AddStack => {
-            Ok(Instruction::AddStack)
-        },
-        OpCode::AddRegister => {
-            let reg1_raw = (ins&0xf00) >> 8;
-            let reg2_raw = (ins&0xf000) >> 12 ;
-            let reg1 = Register::from_u8(reg1_raw as u8).
-                ok_or(format!("unknown register 0x{:X}",reg1_raw))?;
-            let reg2 = Register::from_u8( reg2_raw as u8).
-                ok_or(format!("unknow register 0x{:X}",reg2_raw))?;
-            Ok(Instruction::AddRegister(reg1,reg2))
-        },
-
-        OpCode::Signal =>{
-            let arg = parse_instruction_arg(ins);
-            Ok(Instruction::Signal(arg))
-        }
-        _ => Err(format!("Unknown op 0x{:X}",op))
-    }
-}
-//
-
 
 pub type SignalFunction = fn(&mut Machine) -> Result<(),String>;
 //16bit虚拟机 结构体
@@ -71,8 +26,27 @@ impl Machine{
             memory: Box::new(LinearMemory::new(8*1024)),
         }
     }
+ 
+    pub fn state(&self) -> String{
 
-    pub fn get_register(&self,r:Register) -> u16{
+    format!("A: {} | B:{} | C:{} | M:{} | SP:{} | PC:{} | BP:{} | FLAGS:{:X}",
+            self.get_registers(Register::A),
+            self.get_registers(Register::B),
+            self.get_registers(Register::C),
+            self.get_registers(Register::M),
+            self.get_registers(Register::SP),
+            self.get_registers(Register::PC),
+            self.get_registers(Register::BP),
+            self.get_registers(Register::FLAGS))
+
+
+    }
+    
+    pub fn set_sp(&mut self,r:Register,u:u16){
+        self.registers[r as usize] = u;
+    }
+
+    pub fn get_registers(&self,r:Register) -> u16{
         self.registers[r as usize]
     }
 
@@ -109,15 +83,15 @@ impl Machine{
         let pc = self.registers[Register::PC as usize];
         let instruction = self.memory.read2(pc).ok_or(format!("pc read file @ {:X}",pc))?;
         self.registers[Register::PC as usize ] = pc + 2;
-        //Instruction  = [ 0 0 0 0 0 0 0 0 | 0 0 0 0 0 0 0 0 ]
-        //                 operation       |ARG(s)
-        //                                 |8 bit literal
-        //                                 |REG1 | REG2 
-        let  op = parse_instruction(instruction)?;
+        let  op = Instruction::try_from(instruction)?;
         match op{
             Instruction::Nop => Ok(()),
             Instruction::Push(v) => {
                 self.push(v.into())
+            },
+            Instruction::PushRegister(r) => {
+                self.push(self.registers[r as usize])?;
+                Ok(())
             },
             Instruction::PopRegister(r) => {
                 //返回栈顶的值

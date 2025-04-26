@@ -55,18 +55,22 @@ fn handle_line(parts:&Vec<&str>) -> Result<Instruction,String>{
                 assert_length(parts,1)?;
                 Ok(Instruction::AddStack)
             },
+            OpCode::PushRegister => {
+                assert_length(parts,2)?;
+                Ok(Instruction::PushRegister(parse_register(parts[1])?))
+            },
             OpCode::PopRegister => {
                 assert_length(parts,2)?;
                 Ok(Instruction::PopRegister(parse_register(parts[1])?))
             },
 
-           /* OpCode::AddRegister=> {
+
+            OpCode::AddRegister=> {
                 assert_length(parts,3)?;
                 Ok(Instruction::AddRegister(parse_register(parts[1])?,parse_register(parts[2])?))
-            },*/
+            },
 
             OpCode::Nop => {
-                assert_length(parts,1)?;
                 Ok(Instruction::Nop)
             },
 

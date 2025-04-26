@@ -26,12 +26,14 @@ pub fn main() ->Result<(),String>{
     reader.read_to_end(&mut program).map_err(|e| format!("read {}",e))?;
     
     let mut vm = Machine::new();
+    vm.set_sp(Register::SP,0x1000);
     vm.define_handler(0xf0,signal_halt);
     vm.memory.load_from_vec(&program,0);
     while !vm.halt{
         vm.step()?;
+        println!("{}",vm.state());
     }
-    println!("A  = {}",vm.get_register(Register::A));
+    println!("A  = {}",vm.get_registers(Register::A));
     Ok(())
 
 }
