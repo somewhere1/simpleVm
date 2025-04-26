@@ -1,10 +1,14 @@
 use crate::register::Register;
+<<<<<<< HEAD
 use std::str::FromStr;
 //Instruction  = [ 0 0 0 0 0 0 0 0 | 0 0 0 0 0 0 0 0 ]
 //                 operation       |ARG(s)
 //                                 |8 bit literal
 //                                 |REG1 | REG2 
      
+=======
+
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd
 #[derive(Debug)]
 pub enum Instruction{
     Nop,
@@ -12,7 +16,10 @@ pub enum Instruction{
     PopRegister(Register),
     AddStack,
     AddRegister(Register,Register),
+<<<<<<< HEAD
     PushRegister(Register),
+=======
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd
     Signal(u8),
 
 }
@@ -42,7 +49,10 @@ impl Instruction{
 
             Self::Nop => OpCode::Nop as u16,
             Self::Push(x) => OpCode::Push as u16  |  Self::encode_num(*x),
+<<<<<<< HEAD
             Self::PushRegister(r) => OpCode::PushRegister as u16 | Self::encode_r1(*r),
+=======
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd
             Self::PopRegister(r) => OpCode::PopRegister as u16 | Self::encode_r1(*r),
             Self::AddStack => OpCode::AddStack as u16,
             Self::AddRegister(r1,r2) => OpCode::AddRegister as u16 | Self::encode_rs(*r1,*r2),
@@ -53,6 +63,7 @@ impl Instruction{
 
 }
 
+<<<<<<< HEAD
 fn parse_instruction_arg(ins:u16) -> u8{
     ((ins&0xff00) >> 8) as u8
 }
@@ -109,6 +120,8 @@ impl TryFrom<u16> for Instruction{
 
 }
 
+=======
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd
 
 #[repr(u8)]
 #[derive(Debug)]
@@ -117,7 +130,10 @@ pub enum OpCode{
     Nop=0x0,
     Push = 0x1,
     PopRegister = 0x2,
+<<<<<<< HEAD
     PushRegister = 0x3,
+=======
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd
     Signal = 0x0f,
     AddStack = 0x10,
     AddRegister = 0x11,
@@ -126,6 +142,7 @@ pub enum OpCode{
 }
 
 
+<<<<<<< HEAD
 
 impl FromStr for OpCode{
     
@@ -142,10 +159,43 @@ impl FromStr for OpCode{
             "AddStack" => Ok(Self::AddStack),
             "AddRegister" => Ok(Self::AddRegister),
             _ => Err(format!("unknown OpCode {}!!!",s))
+=======
+impl OpCode{
+     pub fn value(&self) -> u8 {
+         unsafe{ *<*const _>::from(self).cast::<u8>()}
+     } 
+     
+    
+    pub fn from_str(s:&str) -> Option<Self>{
+
+        match s {
+
+            "Nop" => Some(Self::Nop),
+            "Push" => Some(Self::Push),
+            "PopRegister"=> Some(Self::PopRegister),
+             "Signal" => Some(Self::Signal),
+            "AddStack" => Some(Self::AddStack),
+            "AddRegister" => Some(Self::AddRegister),
+            _ => None
+        }
+    }
+
+
+    pub fn from_u8(b:u8) -> Option<Self>{
+        match b {
+        x if x == Self::Nop  as u8 => Some(Self::Nop),
+        x if x == Self::Push as u8 => Some(Self::Push),
+        x if x == Self::PopRegister as u8  => Some(Self::PopRegister),
+        x if x == Self::Signal as u8  => Some(Self::Signal),
+        x if x == Self::AddStack as u8  => Some(Self::AddStack),
+        x if x == Self::AddRegister as u8 => Some(Self::AddRegister),
+        _ => None
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd
 
 
         }
     }
+<<<<<<< HEAD
 }
 
 impl TryFrom<u8> for OpCode{
@@ -170,3 +220,7 @@ impl TryFrom<u8> for OpCode{
 }
 
 }
+=======
+ }
+
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd

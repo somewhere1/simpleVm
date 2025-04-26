@@ -2,8 +2,58 @@ use crate::memory::{LinearMemory,Addressable};
 use std::collections::HashMap;
 use crate::op::{OpCode,Instruction};
 use crate::register::Register;
+<<<<<<< HEAD
 
 
+=======
+
+fn parse_instruction_arg(ins:u16) -> u8{
+    ((ins&0xff00) >> 8) as u8
+}
+
+
+fn parse_instruction(ins: u16) -> Result<Instruction,String>{
+
+    let op =(ins & 0xff) as u8;
+    match OpCode::from_u8(op).ok_or(format!("unknown op: {:X}",op))? {
+        OpCode::Nop => Ok(Instruction::Nop),
+        OpCode::Push =>{
+            //取出进栈的数据
+            let arg = (ins & 0xff00) >> 8;
+            Ok(Instruction::Push(arg as u8))
+
+        },
+        OpCode::PopRegister => {
+            let reg = (ins & 0xff00) >> 8;
+            Register::from_u8(reg as u8)
+                .ok_or(format!("unknown register 0x{:X}",reg))
+                .map(|r| Instruction::PopRegister(r))
+                    
+        },
+        OpCode::AddStack => {
+            Ok(Instruction::AddStack)
+        },
+        OpCode::AddRegister => {
+            let reg1_raw = (ins&0xf00) >> 8;
+            let reg2_raw = (ins&0xf000) >> 12 ;
+            let reg1 = Register::from_u8(reg1_raw as u8).
+                ok_or(format!("unknown register 0x{:X}",reg1_raw))?;
+            let reg2 = Register::from_u8( reg2_raw as u8).
+                ok_or(format!("unknow register 0x{:X}",reg2_raw))?;
+            Ok(Instruction::AddRegister(reg1,reg2))
+        },
+
+        OpCode::Signal =>{
+            let arg = parse_instruction_arg(ins);
+            Ok(Instruction::Signal(arg))
+        }
+        _ => Err(format!("Unknown op 0x{:X}",op))
+    }
+}
+//
+
+
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd
 pub type SignalFunction = fn(&mut Machine) -> Result<(),String>;
 //16bit虚拟机 结构体
 pub struct Machine{
@@ -89,10 +139,13 @@ impl Machine{
             Instruction::Push(v) => {
                 self.push(v.into())
             },
+<<<<<<< HEAD
             Instruction::PushRegister(r) => {
                 self.push(self.registers[r as usize])?;
                 Ok(())
             },
+=======
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd
             Instruction::PopRegister(r) => {
                 //返回栈顶的值
                 let value = self.pop()?;

@@ -55,15 +55,19 @@ fn handle_line(parts:&Vec<&str>) -> Result<Instruction,String>{
                 assert_length(parts,1)?;
                 Ok(Instruction::AddStack)
             },
+<<<<<<< HEAD
             OpCode::PushRegister => {
                 assert_length(parts,2)?;
                 Ok(Instruction::PushRegister(parse_register(parts[1])?))
             },
+=======
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd
             OpCode::PopRegister => {
                 assert_length(parts,2)?;
                 Ok(Instruction::PopRegister(parse_register(parts[1])?))
             },
 
+<<<<<<< HEAD
 
             OpCode::AddRegister=> {
                 assert_length(parts,3)?;
@@ -71,6 +75,15 @@ fn handle_line(parts:&Vec<&str>) -> Result<Instruction,String>{
             },
 
             OpCode::Nop => {
+=======
+           /* OpCode::AddRegister=> {
+                assert_length(parts,3)?;
+                Ok(Instruction::AddRegister(parse_register(parts[1])?,parse_register(parts[2])?))
+            },*/
+
+            OpCode::Nop => {
+                assert_length(parts,1)?;
+>>>>>>> 30465c277c223d488f17568f5accd4c2f8bf0edd
                 Ok(Instruction::Nop)
             },
 
